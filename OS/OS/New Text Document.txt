@@ -1,0 +1,118 @@
+[18bcs073@mepcolinux ex7.1]$cat producer.h
+#include<stdio.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+[18bcs073@mepcolinux ex7.1]$cat app.c
+#include"producer.h"
+void main()
+{
+        int sid,in,ele,*buf,s1,i;
+        printf("Input Data to sort the array in descending order\n");
+        printf("*****************************************************\n");
+        in = 0;
+        int size = 6;
+        s1 = shmget(6000,sizeof(int)*size,IPC_CREAT|IPC_EXCL|00600);
+        if(s1 == -1)
+        {
+                perror("shmget");
+        }
+        else
+        {
+                buf = (int *)shmat(s1,NULL,00600);
+                if(buf == NULL)
+                {
+                        perror("shmat");
+                }
+                else
+                {
+                        printf("Enter the 6 elements of the array: \n");
+                        for(i =0;i<size;i++)
+                        {
+                                scanf("%d",&ele);
+                                buf[in%size] = ele;
+                                in++;
+                        }
+                }
+        }
+}
+[18bcs073@mepcolinux ex7.1]$cat consumer.h
+#include<stdio.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+
+[18bcs073@mepcolinux ex7.1]$cat cona.c
+#include"consumer.h"
+void main()
+{
+        int sid,d,out,ele,*buf,s1,i,j;
+        out = 0;
+        int size = 6;
+        s1 = shmget(6000,sizeof(int)*size,IPC_EXCL|00600);
+        if(s1 == -1)
+        {
+                perror("shmget");
+        }
+        else
+        {
+                buf = (int *)shmat(s1,NULL,00600);
+                if(buf == NULL)
+                {
+                        perror("shmat");
+                }
+                else
+                {
+                        int a[size],temp,lar;
+                        printf("Data Read\n");
+                        for(i =0;i<size;i++)
+                        {
+                                for(j = i+1;j<size;j++)
+                                {
+                                        if(buf[i] < buf[j])
+                                        {
+                                                temp = buf[i];
+                                                buf[i] = buf[j];
+                                                buf[j] = temp;
+                                        }
+                                }
+                        }
+                        printf("\nSorted Array in Descending Order: \n");
+                        for(i = 0; i<size;i++)
+                        {
+                                printf("%d\n", buf[i]);
+                        }
+                        printf("The Second Largest Element in the given array is %d\n",buf[1]);
+                        d = shmctl(s1,IPC_RMID,NULL);
+                }
+        }
+}
+[18bcs073@mepcolinux ex7.1]$cat makefile
+out.exe: app.o
+        cc  app.o -o out.exe
+app.o:app.c
+        cc -c app.c
+
+[18bcs073@mepcolinux ex7.1]$cc app.c -o c.out
+[18bcs073@mepcolinux ex7.1]$./c.out
+Input Data to sort the array in descending order
+*****************************************************
+Enter the 6 elements of the array:
+2
+4
+1
+[18bcs073@mepcolinux ex7]$
+3
+9
+[18bcs073@mepcolinux ex7.1]$cc cona.c -o c.out
+[18bcs073@mepcolinux ex7.1]$./c.out
+Data Read
+
+Sorted Array in Descending Order:
+9
+7
+4
+3
+2
+1
+The Second Largest Element in the given array is 7
+[18bcs073@mepcolinux ex7.1]$exit
+exit

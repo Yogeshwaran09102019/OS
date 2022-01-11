@@ -1,0 +1,272 @@
+Script started on Thursday 07 October 2021 11:33:22 AM IST
+[?1034h[19bcs160@mepcolinux ex2]$cat exe3.cpp
+#include<iostream>
+using namespace std;
+struct sjf
+{
+	int id;
+	int bt;
+	int	wt;
+	int tt;
+};
+int main()
+{
+	int n,i,j,temp,temp2;
+	cout<<"\nEnter The No of Process to create :";
+	cin>>n;
+	struct sjf arr[n];
+	for(i=0;i<n;i++)
+	{
+		cout<<"\nEnter The "<<i<<" Process's Id :";
+		cin>>arr[i].id;
+		cout<<"\nEnter The "<<i<<" Process's Burst Time :";
+		cin>>arr[i].bt;
+	}
+	for(i=0;i<n;i++)
+	{
+		cout<<"\nThe "<<i<<" Process's Id :"<<arr[i].id;
+		cout<<"\tThe "<<i<<" Process's Burst Time :"<<arr[i].bt;
+	}
+	for(i=0;i<n;i++)
+	{
+		for(j=i+1;j<n;j++)
+		{
+			if(arr[i].bt>arr[j].bt)
+			{
+				temp=arr[i].bt;
+				temp2=arr[i].id;
+				arr[i].bt=arr[j].bt;
+				arr[i].id=arr[j].id;
+				arr[j].bt=temp;
+				arr[j].id=temp2;
+			}
+		}
+	}
+	cout<<"\nAfter ASCE";
+	for(i=0;i<n;i++)
+	{
+		cout<<"\nThe "<<i<<" Process's Id :"<<arr[i].id;
+		cout<<"\tThe "<<i<<" Process's Burst Time :"<<arr[i].bt;
+	}
+	arr[0].wt=0;
+	for(i=1;i<n;i++)
+	{
+		arr[i].wt=arr[i-1].bt+arr[i-1].wt;
+	}
+	cout<<"\nGantt Chart:\n";
+	for(i=0;i<n;i++)
+		cout<<"\t"<<arr[i].id<<"\t";
+	cout<<"\n";
+	for(i=0;i<n;i++)
+	{
+		cout<<arr[i].wt<<"\t\t";
+		if(i==n-1)
+			cout<<arr[i].wt+arr[i].bt;
+	}
+	for(i=0;i<n;i++)
+		arr[i].tt=arr[i].wt+arr[i].bt;
+	for(i=0;i<n;i++)
+	{
+		cout<<"\nThe "<<i<<" Process's Id :"<<arr[i].id;
+		cout<<"\tThe "<<i<<" Process's Burst Time :"<<arr[i].bt;
+		cout<<"\n\tThe "<<i<<" Process's Waiting Time :"<<arr[i].wt;
+		cout<<"\tThe "<<i<<" Process's Turnaround Time :"<<arr[i].tt;
+	}
+	cout<<"\n";
+	int sum=0;
+	int sum2=0;
+	for(i=0;i<n;i++)
+	{
+		sum=sum+arr[i].tt;
+		sum2=sum2+arr[i].wt;
+	}
+	cout<<"\nAverage Waiting Time : "<<sum2/4;
+	cout<<"\nAverage Turnaround Time : "<<sum/4<<"\n";
+	return 0;
+}
+[19bcs160@mepcolinux ex2]$./exe3/[K.exe
+
+Enter The No of Process to create :4
+
+Enter The 0 Process's Id :0
+
+Enter The 0 Process's Burst Time :1 6
+
+Enter The 1 Process's Id :1
+
+Enter The 1 Process's Burst Time :8
+
+Enter The 2 Process's Id :2
+
+Enter The 2 Process's Burst Time :7
+
+Enter The 3 Process's Id :3
+
+Enter The 3 Process's Burst Time :3
+
+The 0 Process's Id :0	The 0 Process's Burst Time :6
+The 1 Process's Id :1	The 1 Process's Burst Time :8
+The 2 Process's Id :2	The 2 Process's Burst Time :7
+The 3 Process's Id :3	The 3 Process's Burst Time :3
+After ASCE
+The 0 Process's Id :3	The 0 Process's Burst Time :3
+The 1 Process's Id :0	The 1 Process's Burst Time :6
+The 2 Process's Id :2	The 2 Process's Burst Time :7
+The 3 Process's Id :1	The 3 Process's Burst Time :8
+Gantt Chart:
+	3		0		2		1	
+0		3		9		16		24
+The 0 Process's Id :3	The 0 Process's Burst Time :3
+	The 0 Process's Waiting Time :0	The 0 Process's Turnaround Time :3
+The 1 Process's Id :0	The 1 Process's Burst Time :6
+	The 1 Process's Waiting Time :3	The 1 Process's Turnaround Time :9
+The 2 Process's Id :2	The 2 Process's Burst Time :7
+	The 2 Process's Waiting Time :9	The 2 Process's Turnaround Time :16
+The 3 Process's Id :1	The 3 Process's Burst Time :8
+	The 3 Process's Waiting Time :16	The 3 Process's Turnaround Time :24
+
+Average Waiting Time : 7
+Average Turnaround Time : 13
+[19bcs160@mepcolinux ex2]$cat exe4.cpp
+#include<iostream>
+using namespace std;
+int tl=0;
+struct process{
+    int pid;
+    int burstTime;
+};
+void print(process *p, int n);
+void scheduling(process *p,int n,int tq);
+int schedule(process *p,int n,int tq);
+void timeline(process *p,int n,int tq);
+int calctl(process *p,int n,int tq);
+void calcWait();
+int main(){
+    process *p;
+    int n;
+    cout<<"Enter the number of processes ";
+    cin>>n;
+    p=new process[n];
+    cout<<"Enter the process Details\n";
+    int i;
+    for(i=0;i<n;i++){
+        cout<<"Enter the process Id of "<<i+1<<" ";
+        cin>>p[i].pid;
+        cout<<"Enter the process Burst Time for PID ";
+        cin>>p[i].burstTime;
+    }
+    int tq;
+    cout<<"Enter the Time Quantum ";
+    cin>>tq;
+    cout<<"Processes \n";
+    print(p,n);
+    int *bs;
+    bs= new int[n];
+    for(i=0;i<n;i++){
+        bs[i]=p[i].burstTime;
+    }
+    cout<<"\n";
+    scheduling(p,n,tq);
+
+    for(i=0;i<n;i++){
+        p[i].burstTime=bs[i];
+    }
+    timeline(p,n,tq);
+    cout<<"\n";
+    return 0;
+}
+void print(process *p, int n){
+    for(int j=0;j<n;j++){
+        cout<<"\nProcess ID "<<p[j].pid;
+        cout<<"\nBurst Time "<<p[j].burstTime<<"\n";
+    }
+
+}
+void scheduling(process *p,int n ,int tq){
+        int status;
+        do{
+                status=schedule(p,n,tq);
+        }while(status==1);
+        cout<<"\n";
+        cout<<"0";
+}
+int schedule(process *p,int n,int tq){
+        int i,c=0;
+        for(i=0;i<n;i++){
+                if(p[i].burstTime>0){
+                        cout<<"|  "<<p[i].pid<<"  |";
+                }
+        }
+        for(i=0;i<n;i++){
+                p[i].burstTime=p[i].burstTime-tq;
+                if(p[i].burstTime<=0){
+                        c++;
+                }
+        }
+        if(c>=n)
+                return 0;
+        else
+                return 1;
+}
+void timeline(process *p,int n,int tq){
+        int flag;
+	do{
+                flag=calctl(p,n,tq);
+        }while(flag==1);
+}
+int calctl(process *p,int n,int tq){
+        int i;
+        int count=0;
+        int f=0;
+        for(i=0;i<n;i++){
+                if(p[i].burstTime>=tq){
+                        tl+=tq;
+                        cout<<"      "<<tl;
+			p[i].burstTime-=tq;
+                }
+                else if(p[i].burstTime<tq&&p[i].burstTime){
+                        tl+=p[i].burstTime;
+                        cout<<"      "<<tl;
+			p[i].burstTime-=p[i].burstTime;
+                }
+                else if(p[i].burstTime==0){
+                        f++;
+                }
+        }
+        for(i=0;i<n;i++){
+                if(p[i].burstTime<=0){
+                        count++;
+                }
+        }
+        if(count==n)
+                return 0;
+        else
+                return 1;
+}
+[19bcs160@mepcolinux ex2]$./exe4.exe
+Enter the number of processes 3
+Enter the process Details
+Enter the process Id of 1 11
+Enter the process Burst Time for PID 5
+Enter the process Id of 2 12
+Enter the process Burst Time for PID 3
+Enter the process Id of 3 13
+Enter the process Burst Time for PID 2
+Enter the Time Quantum 2
+Processes 
+
+Process ID 11
+Burst Time 5
+
+Process ID 12
+Burst Time 3
+
+Process ID 13
+Burst Time 2
+
+|  11  ||  12  ||  13  ||  11  ||  12  ||  11  |
+0      2      4      6      8      9      10
+[19bcs160@mepcolinux ex2]$exit
+exit
+
+Script done on Thursday 07 October 2021 11:34:58 AM IST

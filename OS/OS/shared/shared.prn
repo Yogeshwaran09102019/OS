@@ -1,0 +1,58 @@
+Script started on Thu Oct 21 15:57:55 2021
+[?1034h[19bcs160@mepcolinux shared]$cat writer.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/shm.h>
+#include<string.h>
+int main()
+{
+	int i;
+	void *shared_memory;
+	char buff[100];
+	int shmid;
+	shmid=shmget((key_t)160, 1024, 0666|IPC_CREAT); 
+	printf("Key of shared memory is %d\n",shmid);
+	shared_memory=shmat(shmid,NULL,0);
+	printf("Process attached at %p\n",shared_memory); 
+	printf("Enter data to write to shared memory\n");
+	read(0,buff,100);
+	strcpy(shared_memory,buff); 
+	printf("Message : %s\n",(char *)shared_memory);
+}
+[19bcs160@mepcolinux shared]$cat reader.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/shm.h>
+#include<string.h>
+int main()
+{
+	int i;
+	void *shared_memory;
+	char buff[100];
+	int shmid;
+	shmid=shmget((key_t)160, 1024, 0666);
+	printf("Key of shared memory is %d\n",shmid);
+	shared_memory=shmat(shmid,NULL,0); 
+	printf("Process attached at %p\n",shared_memory);
+	printf("Data read from shared memory is : %s\n",(char *)shared_memory);
+	shmctl(shmid,IPC_RMID,0);
+}
+
+[19bcs160@mepcolinux shared]$./writer/e  .exe
+Key of shared memory is 196608
+Process attached at 0x7f94604bd000
+Enter data to write to shared memory
+hello
+Message : hello
+
+[19bcs160@mepcolinux shared]$./reader.exe
+Key of shared memory is 196608
+Process attached at 0x7fa061c97000
+Data read from shared memory is : hello
+
+[19bcs160@mepcolinux shared]$exit
+exit
+
+Script done on Thu Oct 21 15:58:19 2021

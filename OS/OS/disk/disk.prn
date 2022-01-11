@@ -1,0 +1,357 @@
+Script started on Tue Oct 26 14:24:11 2021
+[19bcs160@mepcolinux disk]$cat cscan.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void dsort(int *req, int n , int cur, int *ne){
+	int i,j;
+	for(i=0;i<n;i++){
+		for(j=i+1;j<n;j++){
+			if(req[i] < req[j]){
+				int temp = req[i];
+				req[i] = req[j];
+				req[j] = temp;
+			}
+		}
+	}
+	j=0;
+	for(i=0;i<n;i++){
+		if(req[i] < cur){
+			ne[j++] = req[i];
+		}
+	}
+	for(i=0;i<n;i++){
+		if(req[i] > cur){
+			ne[j++] = req[i];
+		}
+	}
+}
+
+void sort(int *req, int n , int cur, int *ne){
+	int i,j;
+	for(i=0;i<n;i++){
+		for(j=i+1;j<n;j++){
+			if(req[i] > req[j]){
+				int temp = req[i];
+				req[i] = req[j];
+				req[j] = temp;
+			}
+		}
+	}
+	j=0;
+	for(i=0;i<n;i++){
+		if(req[i] > cur){
+			ne[j++] = req[i];
+		}
+	}
+	for(i=0;i<n;i++){
+		if(req[i] < cur){
+			ne[j++] = req[i];
+		}
+	}
+}
+
+int diff(int a, int b){
+	if(a<b){
+		return b-a;
+	}else if(a>b){
+		return a-b;
+	}else if(a==b){
+		return 0;
+	}
+}
+
+int main(){
+	int i,n,min,max,cur,from,to;
+	char name;
+	printf("Enter track range seperated by space : ");
+	scanf("%d %d",&min,&max);
+	printf("Enter the current position of r/w head : ");
+	scanf("%d",&cur);
+	printf("Enter direction of track head (Right Or Left): ");
+	scanf("%d %d",&from,&to);		
+	printf("Enter number of request : ");
+	scanf("%d",&n);
+	int *req = (int*)malloc((n+1)*sizeof(int));
+	printf("Enter the request queue : ");
+	for(i=0;i<n;i++)
+		scanf("%d",&req[i]);
+	req[i++]=max;
+	req[i] = min;
+	int *ne = (int*)malloc((n+1)*sizeof(int));
+	if(from == min && to == max){
+		sort(req,n+2,cur,ne);
+	}else if(from == max && to == min){
+		dsort(req,n+2,cur,ne);
+	}
+	int total_movement = 0;
+	printf("\nDisk track follow : %d",cur);
+	for(i=0;i<n+2;i++){
+		printf("->%d",ne[i]);
+		total_movement = total_movement + diff(cur,ne[i]);
+		cur = ne[i];
+		if(cur == to){
+			total_movement = total_movement + diff(cur,from);
+			cur = from;
+		}
+	}
+	printf("\n\ntotal track head movement : %d\n",total_movement);
+}
+[19bcs160@mepcolinux disk]$cat fcfs.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+int diff(int a, int b){
+	if(a<b){
+		return b-a;
+	}else if(a>b){
+		return a-b;
+	}else if(a==b){
+		return 0;
+	}
+}
+
+int main(){
+	int i,n,min,max,cur;
+	printf("Enter track ramge seperated by space : ");
+	scanf("%d %d",&min,&max);
+	printf("Enter the current position of r/w head : ");
+	scanf("%d",&cur);
+	printf("Enter number of request : ");
+	scanf("%d",&n);
+	int req[n];
+	printf("Enter the request queue : ");
+	for(i=0;i<n;i++)
+		scanf("%d",&req[i]);
+	printf("\nEntered request queue : ");
+	for(i=0;i<n;i++)
+		printf("%d ",req[i]);
+	int total_movement=0;
+	printf("\nDisk track follow : %d",cur);
+	
+	for(i=0;i<n;i++){
+		printf("->%d",req[i]);
+		total_movement = total_movement + diff(req[i],cur);
+		cur = req[i];
+	}
+	printf("\nTotal r/w movement : %d\n",total_movement);
+}
+[19bcs160@mepcolinux disk]$cat clook.c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void dsort(int *req, int n , int cur, int *ne){
+	int i,j;
+	for(i=0;i<n;i++){
+		for(j=i+1;j<n;j++){
+			if(req[i] < req[j]){
+				int temp = req[i];
+				req[i] = req[j];
+				req[j] = temp;
+			}
+		}
+	}
+	j=0;
+	for(i=0;i<n;i++){
+		if(req[i] < cur){
+			ne[j++] = req[i];
+		}
+	}
+	for(i=0;i<n;i++){
+		if(req[i] > cur){
+			ne[j++] = req[i];
+		}
+	}
+}
+
+void sort(int *req, int n , int cur, int *ne){
+	int i,j;
+	for(i=0;i<n;i++){
+		for(j=i+1;j<n;j++){
+			if(req[i] > req[j]){
+				int temp = req[i];
+				req[i] = req[j];
+				req[j] = temp;
+			}
+		}
+	}
+	j=0;
+	for(i=0;i<n;i++){
+		if(req[i] > cur){
+			ne[j++] = req[i];
+		}
+	}
+	for(i=0;i<n;i++){
+		if(req[i] < cur){
+			ne[j++] = req[i];
+		}
+	}
+}
+
+int diff(int a, int b){
+	if(a<b){
+		return b-a;
+	}else if(a>b){
+		return a-b;
+	}else if(a==b){
+		return 0;
+	}
+}
+
+int main(){
+	int i,n,min,max,cur,from,to;
+	printf("Enter track range seperated by space : ");
+	scanf("%d %d",&min,&max);
+	printf("Enter the current position of r/w head : ");
+	scanf("%d",&cur);
+	printf("Enter direction of track head : ");
+	scanf("%d %d",&from,&to);
+	printf("Enter number of request : ");
+	scanf("%d",&n);
+	int *req = (int*)malloc((n+1)*sizeof(int));
+	printf("Enter the request queue : ");
+	for(i=0;i<n;i++)
+		scanf("%d",&req[i]);
+	req[i++]=max;
+	req[i] = min;
+	int *ne = (int*)malloc((n+1)*sizeof(int));
+	if(from == min && to == max){
+		sort(req,n+2,cur,ne);
+	}else if(from == max && to == min){
+		dsort(req,n+2,cur,ne);
+	}
+	int total_movement = 0;
+	for(i=0;i<n+2;i++){
+		printf("%d ",ne[i]);
+	}
+	printf("\nDisk track follow : %d",cur);
+	for(i=0;i<n+2;i++){
+		if(ne[i] != max && ne[i] != min){
+			printf("->%d",ne[i]);
+			total_movement = total_movement + diff(cur,ne[i]);
+			cur = ne[i];
+		}
+	}
+	printf("\n\ntotal track head movement : %d\n",total_movement);
+}
+[19bcs160@mepcolinux disk]$cat sstf.c
+#include<stdio.h>
+#include<stdlib.h>
+
+
+int diff(int a, int b){
+	if(a<b){
+		return b-a;
+	}else if(a>b){
+		return a-b;
+	}else if(a==b){
+		return 0;
+	}
+}
+
+int check(int cur, int *req, int n){
+	int i,j,k,h;
+	int min=999;
+	for(i=0;i<n;i++){
+		int ret = diff(cur,req[i]);
+		if(ret < min){
+			min = ret;
+			k=req[i];
+			h=i;
+		}
+	}
+	req[h] = 999;
+	return k;
+}
+int main(){
+	int i,n,min,max,cur;
+	printf("Enter range : ");
+	scanf("%d %d",&min,&max);
+	printf("Enter current position : ");
+	scanf("%d",&cur);
+	printf("Enter number of request : ");
+	scanf("%d",&n);
+	int *req = (int*)malloc(n*sizeof(int));
+	printf("Enter request queue : ");
+	for(i=0;i<n;i++){
+		scanf("%d",&req[i]);
+	}
+	int total_movement = 0;
+	printf("Disk track : %d",cur);
+	for(i=0;i<n;i++){
+		int min = check(cur,req,n);
+		total_movement = total_movement + diff(cur,min);
+		cur = min;
+		printf("->%d",cur);
+	}
+	printf("\nTotal disk movement : %d\n",total_movement);
+}
+[19bcs160@mepcolinux disk]$./cscan.exe
+Enter track range seperated by space : 0 199
+Enter the current position of r/w head : 50
+Enter direction of track head (Right Or Left): 0 199
+Enter number of request : 8
+Enter the request queue : 176
+79
+34
+60
+92
+11
+41
+114
+
+Disk track follow : 50->60->79->92->114->176->199->0->11->34->41
+
+total track head movement : 389
+[19bcs160@mepcolinux disk]$./fcfs.exe
+Enter track ramge seperated by space : 0 199
+Enter the current position of r/w head : 50
+Enter number of request : 8
+Enter the request queue : 176
+79
+34
+60
+92
+11
+41
+114
+
+Entered request queue : 176 79 34 60 92 11 41 114
+Disk track follow : 50->176->79->34->60->92->11->41->114
+Total r/w movement : 510
+[19bcs160@mepcolinux disk]$./clook.exe
+Enter track range seperated by space : 0 199
+Enter the current position of r/w head : 50
+Enter direction of track head : 0 199
+Enter number of request : 8
+Enter the request queue : 176
+79
+34
+60
+92
+11
+41
+114
+60 79 92 114 176 199 0 11 34 41
+Disk track follow : 50->60->79->92->114->176->11->34->41
+
+total track head movement : 321
+[19bcs160@mepcolinux disk]$./sstf.exe
+Enter range : 0 199
+Enter current position : 50
+Enter number of request : 8
+Enter request queue : 176
+79
+34
+60
+92
+11
+41
+114
+Disk track : 50->41->34->11->60->79->92->114->176
+Total disk movement : 204
+[19bcs160@mepcolinux disk]$exit
+exit
+
+Script done on Tue Oct 26 14:24:35 2021
